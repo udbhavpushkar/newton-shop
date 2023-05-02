@@ -1,5 +1,7 @@
 const User = require("../models/user")
 const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+require("dotenv/config")
 
 const registerUser = async (req, res) => {
     try {
@@ -37,15 +39,21 @@ const loginUser = async (req, res) => {
         let reqBody = req.body
 
         //check email exist in our database
-        const existingData = await User.findOne({ email: reqBody.email })
+        const existingUser = await User.findOne({ email: reqBody.email })
 
-        if (existingData) {
+        if (existingUser) {
             // if yes => match password
             //compare req body password with the password stored in database
-            const passwordMatched = await bcrypt.compare(reqBody.password, existingData.password)
+            const passwordMatched = await bcrypt.compare(reqBody.password, existingUser.password)
             if (passwordMatched) {
                 //succesfull loggin
-                res.status(200).json(existingData)
+
+                //generate token here and send it in response
+                //we will encode _id of user
+                const token = jwt.sign({ id: existingUser._id }, process.env.SECRET_KEY)
+                // const token = jwt.sign({ name: "Sean paul", email: "sean@gmail.com" }, "NEWTON_SECRET")
+                const reponseData = { _id: existingUser._id, name: existingUser.name, email: existingUser.email, token: token }
+                res.status(200).json(reponseData)
             } else {
                 throw "Incorrect Password !"
             }

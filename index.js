@@ -2,10 +2,12 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
+require("dotenv/config")
 
 //Routes imports
 const productRoutes = require("./routes/product.js")
 const userRouter = require("./routes/user.js")
+const cartRouter = require("./routes/cart.js")
 
 const app = express()
 const PORT = 8009
@@ -20,8 +22,9 @@ app.use(express.urlencoded({ extended: true }))
 //APIs
 app.use("/product", productRoutes)
 app.use("/user", userRouter)
+app.use("/cart", cartRouter)
 
-mongoose.connect('mongodb://127.0.0.1:27017/julyshop');
+mongoose.connect(process.env.MONGO_URL);
 
 app.listen(PORT, () => {
     console.log("Listining to PORT " + PORT)
