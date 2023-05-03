@@ -8,6 +8,7 @@ require("dotenv/config")
 const productRoutes = require("./routes/product.js")
 const userRouter = require("./routes/user.js")
 const cartRouter = require("./routes/cart.js")
+const orderRouter = require("./routes/order.js")
 
 const app = express()
 const PORT = 8009
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use("/product", productRoutes)
 app.use("/user", userRouter)
 app.use("/cart", cartRouter)
+app.use("/order", orderRouter)
 
 mongoose.connect(process.env.MONGO_URL);
 

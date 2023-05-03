@@ -43,4 +43,35 @@ const addItemToCart = async (req, res) => {
 
 }
 
-module.exports = { createCart, addItemToCart, getCart }
+const updateQuantity = async (req, res) => {
+    try {
+        const cartId = req.params.id
+        const { productId, updatedQuantity } = req.body
+
+        //find your cart by id
+        const cart = await Cart.findById(cartId)
+
+        //find item in items array by productId
+        const item = cart.items.find(item => item.productId._id == productId)
+
+        if (item) {
+            if (updatedQuantity == 0) {//remove from item array
+                const index = cart.items.findIndex(item => item.productId._id == productId)
+                cart.items.splice(index, 1)
+            } else {
+                item.quantity = updatedQuantity
+            }
+
+        } else {
+            throw "Item is not in the cart"
+        }
+
+        await cart.save()
+
+        res.status(200).json(cart)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+}
+
+module.exports = { createCart, addItemToCart, getCart, updateQuantity }
